@@ -14,7 +14,13 @@ export const pokemonSchema = z.object({
     front_default: z.string()
   }),
   germanName: z.string(),
-  germanDescription: z.string()
+  germanDescription: z.string(),
+  evolutions: z.array(z.object({
+    id: z.number(),
+    name: z.string(),
+    germanName: z.string(),
+    sprite: z.string()
+  })).optional()
 });
 
 export type Pokemon = z.infer<typeof pokemonSchema>;

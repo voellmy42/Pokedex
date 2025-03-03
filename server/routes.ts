@@ -16,6 +16,40 @@ async function getGermanTranslation(pokemonId: number) {
   return { germanName, germanDescription: germanDesc };
 }
 
+async function getEvolutionChain(pokemonId: number) {
+  try {
+    const speciesResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/${pokemonId}`);
+    const evolutionChainUrl = speciesResponse.data.evolution_chain.url;
+    const evolutionResponse = await axios.get(evolutionChainUrl);
+
+    const evolutions = [];
+    let evoData = evolutionResponse.data.chain;
+
+    while (evoData) {
+      if (evoData.species) {
+        const speciesUrl = evoData.species.url;
+        const pokemonId = parseInt(speciesUrl.split('/').slice(-2, -1)[0]);
+        const pokemonResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`);
+        const { germanName } = await getGermanTranslation(pokemonId);
+
+        evolutions.push({
+          id: pokemonId,
+          name: evoData.species.name,
+          germanName,
+          sprite: pokemonResponse.data.sprites.front_default
+        });
+      }
+
+      evoData = evoData.evolves_to[0];
+    }
+
+    return evolutions;
+  } catch (error) {
+    console.error('Error fetching evolution chain:', error);
+    return [];
+  }
+}
+
 export async function registerRoutes(app: Express) {
   app.get("/api/pokemon", async (req, res) => {
     const page = parseInt(req.query.page as string) || 1;
@@ -61,11 +95,19 @@ export async function registerRoutes(app: Express) {
   app.get("/api/pokemon/:id", async (req, res) => {
     const id = parseInt(req.params.id);
     try {
-      const pokemon = await storage.getPokemon(id);
+      let pokemon = await storage.getPokemon(id);
       if (!pokemon) {
         res.status(404).json({ message: "Pokemon nicht gefunden" });
         return;
       }
+
+      // Fetch evolution chain if not already cached
+      if (!pokemon.evolutions) {
+        const evolutions = await getEvolutionChain(id);
+        pokemon = { ...pokemon, evolutions };
+        storage.cachePokemon(pokemon);
+      }
+
       res.json(pokemon);
     } catch (error) {
       res.status(500).json({ message: "Fehler beim Laden des Pokemon" });

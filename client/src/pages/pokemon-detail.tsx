@@ -1,13 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
-import { useRoute } from "wouter";
+import { useRoute, useLocation } from "wouter";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 import { type Pokemon } from "@shared/schema";
 import { formatHeight, formatWeight, typeTranslations, statTranslations, getTypeBackgroundClass, getTypeTextClass } from "@/lib/pokemon";
 
 export default function PokemonDetail() {
   const [, params] = useRoute("/pokemon/:id");
+  const [, setLocation] = useLocation();
   const id = parseInt(params?.id || "0");
 
   const { data: pokemon, isLoading } = useQuery<Pokemon>({
@@ -45,11 +48,21 @@ export default function PokemonDetail() {
     <div className="container mx-auto px-4 py-8">
       <Card>
         <CardHeader className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              {pokemon.germanName}
-            </h1>
-            <span className="text-2xl text-muted-foreground">#{pokemon.id.toString().padStart(3, '0')}</span>
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                {pokemon.germanName}
+              </h1>
+              <span className="text-2xl text-muted-foreground">#{pokemon.id.toString().padStart(3, '0')}</span>
+            </div>
+            <Button 
+              variant="outline" 
+              size="icon"
+              onClick={() => setLocation('/')}
+              className="rounded-full"
+            >
+              <X className="h-4 w-4" />
+            </Button>
           </div>
           <div className="flex gap-2">
             {pokemon.types.map((type) => (
@@ -75,6 +88,31 @@ export default function PokemonDetail() {
             <h2 className="text-2xl font-semibold mb-4">Beschreibung</h2>
             <p className="text-lg text-muted-foreground">{pokemon.germanDescription}</p>
           </div>
+
+          {pokemon.evolutions && pokemon.evolutions.length > 0 && (
+            <div>
+              <h2 className="text-2xl font-semibold mb-4">Entwicklungen</h2>
+              <div className="flex gap-4 items-center justify-center">
+                {pokemon.evolutions.map((evolution, index) => (
+                  <div 
+                    key={evolution.id}
+                    className="text-center cursor-pointer"
+                    onClick={() => setLocation(`/pokemon/${evolution.id}`)}
+                  >
+                    <img
+                      src={evolution.sprite}
+                      alt={evolution.germanName}
+                      className="w-24 h-24"
+                    />
+                    <p className="font-medium">{evolution.germanName}</p>
+                    {index < pokemon.evolutions.length - 1 && (
+                      <div className="text-2xl text-muted-foreground mx-2">→</div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             <div>
