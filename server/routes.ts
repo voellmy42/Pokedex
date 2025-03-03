@@ -23,9 +23,9 @@ export async function registerRoutes(app: Express) {
 
     try {
       // If cache is empty, fetch initial data
-      if (storage.getPokemonList(1).then(list => list.length === 0)) {
+      if (await storage.getPokemonList(1).then(list => list.length === 0)) {
         const response = await axios.get(`https://pokeapi.co/api/v2/pokemon?limit=151`);
-        
+
         for (const item of response.data.results) {
           const pokemonResponse = await axios.get(item.url);
           const { germanName, germanDescription } = await getGermanTranslation(pokemonResponse.data.id);
@@ -55,6 +55,20 @@ export async function registerRoutes(app: Express) {
       res.json(pokemon);
     } catch (error) {
       res.status(500).json({ message: "Fehler beim Laden der Pokemon" });
+    }
+  });
+
+  app.get("/api/pokemon/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    try {
+      const pokemon = await storage.getPokemon(id);
+      if (!pokemon) {
+        res.status(404).json({ message: "Pokemon nicht gefunden" });
+        return;
+      }
+      res.json(pokemon);
+    } catch (error) {
+      res.status(500).json({ message: "Fehler beim Laden des Pokemon" });
     }
   });
 
