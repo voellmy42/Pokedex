@@ -4,12 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Swords } from "lucide-react";
 import { type Pokemon } from "@shared/schema";
 import { simulateBattle } from "@/lib/battle";
+import { typeTranslations, getTypeBackgroundClass, getTypeTextClass } from "@/lib/pokemon";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import {
   AlertDialog,
   AlertDialogContent,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
@@ -57,32 +59,91 @@ export default function BattleSelector({ selectedPokemon, onSelectPokemon }: Bat
       </div>
 
       <AlertDialog open={showResult} onOpenChange={setShowResult}>
-        <AlertDialogContent>
+        <AlertDialogContent className="max-w-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>Kampfergebnis</AlertDialogTitle>
-            <AlertDialogDescription className="space-y-4">
-              {battleResult && (
-                <>
-                  <div className="text-center">
-                    <span className="text-xl font-bold text-primary">
-                      {battleResult.winner.germanName}
-                    </span>
-                    <p>ist der Gewinner!</p>
-                  </div>
-                  {battleResult.typeAdvantage && (
-                    <p className="text-sm text-muted-foreground">
-                      Typ-Vorteil war entscheidend für den Sieg!
+            <AlertDialogTitle className="text-center text-2xl mb-4">
+              Kampfergebnis
+            </AlertDialogTitle>
+            {battleResult && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-start gap-4">
+                  <PokemonStats 
+                    pokemon={battleResult.winner} 
+                    power={battleResult.winnerPower}
+                    isWinner={true}
+                  />
+                  <div className="text-2xl font-bold text-primary self-center">VS</div>
+                  <PokemonStats 
+                    pokemon={battleResult.loser} 
+                    power={battleResult.loserPower}
+                    isWinner={false}
+                  />
+                </div>
+
+                <div className="bg-gray-100 rounded-lg p-4 mt-4">
+                  <h3 className="font-semibold mb-2">Kampfanalyse:</h3>
+                  <div className="space-y-2 text-sm">
+                    <p>
+                      <span className="font-semibold text-primary">{battleResult.winner.germanName}</span> hat den Kampf gewonnen!
                     </p>
-                  )}
-                </>
-              )}
-            </AlertDialogDescription>
+                    {battleResult.typeAdvantage && (
+                      <p className="text-emerald-600">
+                        Typ-Vorteil war entscheidend für den Sieg! Die Typen von {battleResult.winner.germanName} waren 
+                        besonders effektiv gegen {battleResult.loser.germanName}.
+                      </p>
+                    )}
+                    <p>
+                      Kampfkraft: {battleResult.winnerPower.toFixed(0)} vs {battleResult.loserPower.toFixed(0)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Schließen</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+    </div>
+  );
+}
+
+function PokemonStats({ pokemon, power, isWinner }: { pokemon: Pokemon, power: number, isWinner: boolean }) {
+  return (
+    <div className={`flex-1 p-4 rounded-lg ${isWinner ? 'bg-emerald-50 ring-2 ring-emerald-500' : 'bg-gray-50'}`}>
+      <div className="text-center">
+        <img
+          src={pokemon.sprites.front_default}
+          alt={pokemon.germanName}
+          className="w-32 h-32 mx-auto"
+        />
+        <h3 className="font-bold text-lg mb-2">{pokemon.germanName}</h3>
+        <div className="flex gap-2 justify-center mb-4">
+          {pokemon.types.map((type) => (
+            <Badge
+              key={type}
+              className={`${getTypeBackgroundClass(type)} ${getTypeTextClass(type)}`}
+            >
+              {typeTranslations[type]}
+            </Badge>
+          ))}
+        </div>
+      </div>
+      <div className="space-y-2">
+        {pokemon.stats.map((stat) => (
+          <div key={stat.name} className="text-sm">
+            <div className="flex justify-between mb-1">
+              <span>{typeTranslations[stat.name] || stat.name}</span>
+              <span>{stat.value}</span>
+            </div>
+            <Progress value={stat.value} max={255} className="h-1" />
+          </div>
+        ))}
+      </div>
+      <div className="mt-4 text-center">
+        <span className="font-semibold">Kampfkraft: {power.toFixed(0)}</span>
+      </div>
     </div>
   );
 }
