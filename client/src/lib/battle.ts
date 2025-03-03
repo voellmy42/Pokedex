@@ -1,7 +1,9 @@
 import { type Pokemon } from "@shared/schema";
 
+// German translations for Pokémon types are in pokemon.ts
+
 // Type effectiveness chart
-const typeEffectiveness: Record<string, Record<string, number>> = {
+export const typeEffectiveness: Record<string, Record<string, number>> = {
   normal: {
     rock: 0.5,
     ghost: 0,
@@ -178,7 +180,7 @@ function calculateTotalStats(pokemon: Pokemon): number {
 function calculateBattlePower(attacker: Pokemon, defender: Pokemon): number {
   const totalStats = calculateTotalStats(attacker);
   let typeAdvantage = 1;
-  
+
   attacker.types.forEach(type => {
     typeAdvantage *= calculateTypeEffectiveness(type, defender.types);
   });

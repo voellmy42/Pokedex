@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import PokemonGrid from "@/components/pokemon/pokemon-grid";
 import SearchBar from "@/components/pokemon/search-bar";
 import BattleSelector from "@/components/pokemon/battle-selector";
+import TypeChart from "@/components/pokemon/type-chart";
 import { Card, CardContent } from "@/components/ui/card";
 import { type Pokemon } from "@shared/schema";
 
@@ -75,6 +76,8 @@ export default function Home() {
               <div className="bg-gray-100 rounded-xl p-4 mb-6">
                 <SearchBar onSearch={setSearch} />
               </div>
+
+              <TypeChart />
 
               <BattleSelector
                 selectedPokemon={selectedPokemon}
