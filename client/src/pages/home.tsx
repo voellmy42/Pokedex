@@ -2,17 +2,47 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import PokemonGrid from "@/components/pokemon/pokemon-grid";
 import SearchBar from "@/components/pokemon/search-bar";
+import BattleSelector from "@/components/pokemon/battle-selector";
 import { Card, CardContent } from "@/components/ui/card";
+import { type Pokemon } from "@shared/schema";
 
 export default function Home() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [selectedPokemon, setSelectedPokemon] = useState<(Pokemon | null)[]>([null, null]);
 
   const { data: pokemon, isLoading } = useQuery({
     queryKey: ["/api/pokemon", page, search],
     queryFn: () =>
       fetch(`/api/pokemon?page=${page}&query=${search}`).then((res) => res.json()),
   });
+
+  const handlePokemonSelect = (pokemon: Pokemon) => {
+    setSelectedPokemon(current => {
+      // If this Pokemon is already selected, return current state
+      if (current.some(p => p?.id === pokemon.id)) {
+        return current;
+      }
+
+      // Find first empty slot
+      const index = current.findIndex(p => p === null);
+      if (index === -1) {
+        return current;
+      }
+
+      const newSelected = [...current];
+      newSelected[index] = pokemon;
+      return newSelected;
+    });
+  };
+
+  const handlePokemonDeselect = (index: number, pokemon: Pokemon | null) => {
+    setSelectedPokemon(current => {
+      const newSelected = [...current];
+      newSelected[index] = pokemon;
+      return newSelected;
+    });
+  };
 
   return (
     <div className="min-h-screen bg-[#e61515]">
@@ -46,11 +76,18 @@ export default function Home() {
                 <SearchBar onSearch={setSearch} />
               </div>
 
+              <BattleSelector
+                selectedPokemon={selectedPokemon}
+                onSelectPokemon={handlePokemonDeselect}
+              />
+
               <PokemonGrid
                 pokemon={pokemon || []}
                 isLoading={isLoading}
                 currentPage={page}
                 onPageChange={setPage}
+                onPokemonSelect={handlePokemonSelect}
+                selectedPokemonIds={selectedPokemon.map(p => p?.id)}
               />
             </div>
           </CardContent>

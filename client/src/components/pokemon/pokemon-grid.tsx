@@ -9,13 +9,17 @@ interface PokemonGridProps {
   isLoading: boolean;
   currentPage: number;
   onPageChange: (page: number) => void;
+  onPokemonSelect?: (pokemon: Pokemon) => void;
+  selectedPokemonIds?: (number | undefined)[];
 }
 
 export default function PokemonGrid({ 
   pokemon, 
   isLoading,
   currentPage,
-  onPageChange 
+  onPageChange,
+  onPokemonSelect,
+  selectedPokemonIds = []
 }: PokemonGridProps) {
   if (isLoading) {
     return (
@@ -33,7 +37,12 @@ export default function PokemonGrid({
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
         {pokemon.map((p) => (
-          <PokemonCard key={p.id} pokemon={p} />
+          <PokemonCard 
+            key={p.id} 
+            pokemon={p}
+            onSelect={onPokemonSelect}
+            isSelected={selectedPokemonIds.includes(p.id)}
+          />
         ))}
       </div>
 

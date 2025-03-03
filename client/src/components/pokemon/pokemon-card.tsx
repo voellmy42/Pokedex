@@ -3,18 +3,32 @@ import { Badge } from "@/components/ui/badge";
 import { type Pokemon } from "@shared/schema";
 import { useLocation } from "wouter";
 import { typeTranslations, getTypeBackgroundClass, getTypeTextClass } from "@/lib/pokemon";
+import { cn } from "@/lib/utils";
 
 interface PokemonCardProps {
   pokemon: Pokemon;
+  onSelect?: (pokemon: Pokemon) => void;
+  isSelected?: boolean;
 }
 
-export default function PokemonCard({ pokemon }: PokemonCardProps) {
+export default function PokemonCard({ pokemon, onSelect, isSelected }: PokemonCardProps) {
   const [, setLocation] = useLocation();
+
+  const handleClick = () => {
+    if (onSelect) {
+      onSelect(pokemon);
+    } else {
+      setLocation(`/pokemon/${pokemon.id}`);
+    }
+  };
 
   return (
     <Card 
-      className="hover:shadow-lg transition-shadow cursor-pointer" 
-      onClick={() => setLocation(`/pokemon/${pokemon.id}`)}
+      className={cn(
+        "hover:shadow-lg transition-shadow cursor-pointer",
+        isSelected && "ring-2 ring-primary"
+      )}
+      onClick={handleClick}
     >
       <CardHeader className="p-4">
         <div className="flex justify-between items-start">
