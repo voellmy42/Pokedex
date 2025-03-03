@@ -15,9 +15,9 @@ export default function Home() {
   });
 
   return (
-    <div className="min-h-screen bg-[#e61515]">
+    <div className="min-h-screen bg-[#CE1C24]">
       <div className="container mx-auto px-4 py-8">
-        <Card className="rounded-3xl border-4 border-[#1a1a1a] shadow-2xl overflow-hidden">
+        <Card className="rounded-3xl border-8 border-[#1a1a1a] shadow-2xl overflow-hidden">
           <CardContent className="p-0">
             {/* Top section with lights */}
             <div className="bg-[#1a1a1a] p-6 flex items-center gap-4">
@@ -31,27 +31,41 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Main content */}
-            <div className="p-6 bg-white">
-              <div className="text-center mb-8">
-                <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                  Pokédex
-                </h1>
-                <p className="text-muted-foreground">
-                  Willkommen beim modernisierten Pokédex
-                </p>
-              </div>
+            {/* Screen border */}
+            <div className="p-8 bg-[#1a1a1a]">
+              {/* Screen content */}
+              <div className="bg-[#98FB98] p-6 rounded-lg shadow-inner">
+                <div className="text-center mb-8">
+                  <h1 className="text-4xl font-bold mb-2 text-[#1a1a1a]">
+                    Pokédex
+                  </h1>
+                  <p className="text-[#1a1a1a]/70">
+                    Willkommen beim modernisierten Pokédex
+                  </p>
+                </div>
 
-              <div className="bg-gray-100 rounded-xl p-4 mb-6">
-                <SearchBar onSearch={setSearch} />
-              </div>
+                <div className="bg-[#c8e6c9] rounded-xl p-4 mb-6 shadow-inner">
+                  <SearchBar onSearch={setSearch} />
+                </div>
 
-              <PokemonGrid
-                pokemon={pokemon || []}
-                isLoading={isLoading}
-                currentPage={page}
-                onPageChange={setPage}
-              />
+                <PokemonGrid
+                  pokemon={pokemon || []}
+                  isLoading={isLoading}
+                  currentPage={page}
+                  onPageChange={setPage}
+                />
+              </div>
+            </div>
+
+            {/* Bottom section with d-pad styling */}
+            <div className="bg-[#1a1a1a] p-6">
+              <div className="w-24 h-24 relative mx-auto">
+                <div className="absolute inset-0 bg-[#333] rounded-full"></div>
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-8 bg-[#222] rounded-md"></div>
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-8 bg-[#222] rounded-md"></div>
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 bg-[#222] rounded-md"></div>
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 bg-[#222] rounded-md"></div>
+              </div>
             </div>
           </CardContent>
         </Card>

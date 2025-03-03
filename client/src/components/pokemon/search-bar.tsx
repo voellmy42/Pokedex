@@ -21,11 +21,11 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder="Pokemon suchen..."
-        className="flex-1 border-2 border-gray-300 focus:border-primary/50"
+        className="flex-1 border-2 border-[#2a9042] focus:border-[#1a6530] bg-[#d8f5d9] placeholder:text-[#1a6530]/50"
       />
       <Button 
         type="submit"
-        className="bg-primary hover:bg-primary/90 text-white font-semibold"
+        className="bg-[#2a9042] hover:bg-[#1a6530] text-white font-semibold"
       >
         <Search className="h-4 w-4 mr-2" />
         Suchen
