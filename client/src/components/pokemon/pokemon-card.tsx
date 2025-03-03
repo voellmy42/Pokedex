@@ -1,9 +1,11 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { type Pokemon } from "@shared/schema";
 import { useLocation } from "wouter";
 import { typeTranslations, getTypeBackgroundClass, getTypeTextClass } from "@/lib/pokemon";
 import { cn } from "@/lib/utils";
+import { Sword, Book } from "lucide-react";
 
 interface PokemonCardProps {
   pokemon: Pokemon;
@@ -14,21 +16,12 @@ interface PokemonCardProps {
 export default function PokemonCard({ pokemon, onSelect, isSelected }: PokemonCardProps) {
   const [, setLocation] = useLocation();
 
-  const handleClick = () => {
-    if (onSelect) {
-      onSelect(pokemon);
-    } else {
-      setLocation(`/pokemon/${pokemon.id}`);
-    }
-  };
-
   return (
     <Card 
       className={cn(
-        "hover:shadow-lg transition-shadow cursor-pointer",
+        "group relative hover:shadow-lg transition-shadow",
         isSelected && "ring-2 ring-primary"
       )}
-      onClick={handleClick}
     >
       <CardHeader className="p-4">
         <div className="flex justify-between items-start">
@@ -57,6 +50,31 @@ export default function PokemonCard({ pokemon, onSelect, isSelected }: PokemonCa
         <p className="mt-4 text-sm text-muted-foreground line-clamp-2">
           {pokemon.germanDescription}
         </p>
+
+        {/* Action buttons that appear on hover */}
+        <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              size="icon"
+              className="bg-white hover:bg-gray-100"
+              onClick={() => setLocation(`/pokemon/${pokemon.id}`)}
+              title="Details anzeigen"
+            >
+              <Book className="h-4 w-4 text-gray-700" />
+            </Button>
+            <Button
+              variant="secondary"
+              size="icon"
+              className="bg-white hover:bg-gray-100"
+              onClick={() => onSelect?.(pokemon)}
+              disabled={isSelected}
+              title="Für Kampf auswählen"
+            >
+              <Sword className="h-4 w-4 text-gray-700" />
+            </Button>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
