@@ -2,6 +2,7 @@ import { type Pokemon } from "@shared/schema";
 import PokemonCard from "./pokemon-card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface PokemonGridProps {
   pokemon: Pokemon[];
@@ -41,15 +42,19 @@ export default function PokemonGrid({
           variant="outline"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
+          className="border-2 hover:bg-gray-100"
         >
+          <ChevronLeft className="h-4 w-4 mr-1" />
           Vorherige
         </Button>
         <Button
           variant="outline"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={pokemon.length < 20}
+          className="border-2 hover:bg-gray-100"
         >
           Nächste
+          <ChevronRight className="h-4 w-4 ml-1" />
         </Button>
       </div>
     </div>
