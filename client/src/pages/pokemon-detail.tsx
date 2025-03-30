@@ -76,12 +76,12 @@ export default function PokemonDetail() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-3 py-4 sm:px-4 sm:py-8">
       <Card>
-        <CardHeader className="space-y-4">
+        <CardHeader className="space-y-3">
           <div className="flex justify-between items-start">
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
                 {pokemon.germanName}
               </h1>
               <span className="text-2xl text-muted-foreground">#{pokemon.id.toString().padStart(3, '0')}</span>

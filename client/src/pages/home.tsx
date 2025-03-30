@@ -63,28 +63,29 @@ export default function Home() {
             </div>
 
             {/* Main content */}
-            <div className="p-6 bg-white">
-              <div className="text-center mb-8">
-                <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            <div className="p-4 sm:p-6 bg-white">
+              <div className="text-center mb-6">
+                <h1 className="text-3xl sm:text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
                   Pokédex
                 </h1>
-                <p className="text-muted-foreground">
+                <p className="text-sm sm:text-base text-muted-foreground">
                   Willkommen beim modernisierten Pokédex
                 </p>
               </div>
 
-              <div className="bg-gray-100 rounded-xl p-4 mb-6">
+              <div className="bg-gray-100 rounded-xl p-3 sm:p-4 mb-4 sticky top-0 z-10">
                 <SearchBar onSearch={setSearch} />
               </div>
 
-              <TypeChart />
+              <div className="space-y-4">
+                <TypeChart />
 
-              <BattleSelector
-                selectedPokemon={selectedPokemon}
-                onSelectPokemon={handlePokemonDeselect}
-              />
+                <BattleSelector
+                  selectedPokemon={selectedPokemon}
+                  onSelectPokemon={handlePokemonDeselect}
+                />
 
-              <PokemonGrid
+                <PokemonGrid
                 pokemon={pokemon || []}
                 isLoading={isLoading}
                 currentPage={page}

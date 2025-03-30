@@ -47,11 +47,11 @@ export default function PokemonCard({ pokemon, onSelect, isSelected }: PokemonCa
   return (
     <Card 
       className={cn(
-        "group relative hover:shadow-lg transition-shadow",
+        "group relative hover:shadow-lg transition-shadow active:scale-98 touch-manipulation",
         isSelected && "ring-2 ring-primary"
       )}
     >
-      <CardHeader className="p-4">
+      <CardHeader className="p-3 sm:p-4">
         <div className="flex justify-between items-start">
           <h3 className="text-lg font-semibold">{pokemon.germanName}</h3>
           <span className="text-sm text-muted-foreground">#{pokemon.id.toString().padStart(3, '0')}</span>

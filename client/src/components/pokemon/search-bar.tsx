@@ -44,8 +44,8 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2">
-      <div className="flex-1 relative">
+    <form onSubmit={handleSubmit} className="flex gap-2 w-full">
+      <div className="flex-1 relative w-full">
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Input
