@@ -80,7 +80,7 @@ export default function Home() {
 
                 <BattleSelector
                   selectedPokemon={selectedPokemon}
-                  onSelectPokemon={handlePokemonDeselect}
+                  onSelectPokemon={handlePokemonSelect}
                 />
 
                 <PokemonGrid
