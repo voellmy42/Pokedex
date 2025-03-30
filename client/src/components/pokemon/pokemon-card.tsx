@@ -3,15 +3,43 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { type Pokemon } from "@shared/schema";
 import { useLocation } from "wouter";
-import { typeTranslations, getTypeBackgroundClass, getTypeTextClass } from "@/lib/pokemon";
+import { typeTranslations, getTypeBackgroundClass, getTypeTextClass, getTypeIcon } from "@/lib/pokemon";
 import { cn } from "@/lib/utils";
-import { Sword, Book } from "lucide-react";
+import { Sword, Book, Flame, Droplets, Leaf, Zap, Snowflake, CircleDot, 
+  Swords, Skull, Mountain, Wind, Brain, Bug, Ghost, Infinity, Moon, Shield, Sparkles, Circle } from "lucide-react";
 
 interface PokemonCardProps {
   pokemon: Pokemon;
   onSelect?: (pokemon: Pokemon) => void;
   isSelected?: boolean;
 }
+
+// Helper component to display the type icon
+const TypeIcon = ({ type }: { type: string }) => {
+  const iconName = getTypeIcon(type);
+  
+  // Get the correct icon based on the name
+  switch (iconName) {
+    case "CircleDot": return <CircleDot className="h-4 w-4 mr-1" />;
+    case "Flame": return <Flame className="h-4 w-4 mr-1" />;
+    case "Droplets": return <Droplets className="h-4 w-4 mr-1" />;
+    case "Leaf": return <Leaf className="h-4 w-4 mr-1" />;
+    case "Zap": return <Zap className="h-4 w-4 mr-1" />;
+    case "Snowflake": return <Snowflake className="h-4 w-4 mr-1" />;
+    case "Swords": return <Swords className="h-4 w-4 mr-1" />;
+    case "Skull": return <Skull className="h-4 w-4 mr-1" />;
+    case "Mountain": return <Mountain className="h-4 w-4 mr-1" />;
+    case "Wind": return <Wind className="h-4 w-4 mr-1" />;
+    case "Brain": return <Brain className="h-4 w-4 mr-1" />;
+    case "Bug": return <Bug className="h-4 w-4 mr-1" />;
+    case "Ghost": return <Ghost className="h-4 w-4 mr-1" />;
+    case "Infinity": return <Infinity className="h-4 w-4 mr-1" />;
+    case "Moon": return <Moon className="h-4 w-4 mr-1" />;
+    case "Shield": return <Shield className="h-4 w-4 mr-1" />;
+    case "Sparkles": return <Sparkles className="h-4 w-4 mr-1" />;
+    default: return <Circle className="h-4 w-4 mr-1" />;
+  }
+};
 
 export default function PokemonCard({ pokemon, onSelect, isSelected }: PokemonCardProps) {
   const [, setLocation] = useLocation();
@@ -41,8 +69,9 @@ export default function PokemonCard({ pokemon, onSelect, isSelected }: PokemonCa
           {pokemon.types.map((type) => (
             <Badge
               key={type}
-              className={`${getTypeBackgroundClass(type)} ${getTypeTextClass(type)}`}
+              className={`${getTypeBackgroundClass(type)} ${getTypeTextClass(type)} flex items-center`}
             >
+              <TypeIcon type={type} />
               {typeTranslations[type]}
             </Badge>
           ))}

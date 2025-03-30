@@ -4,9 +4,40 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { 
+  X, Flame, Droplets, Leaf, Zap, Snowflake, CircleDot, 
+  Swords, Skull, Mountain, Wind, Brain, Bug, Ghost, Infinity, 
+  Moon, Shield, Sparkles, Circle 
+} from "lucide-react";
 import { type Pokemon } from "@shared/schema";
-import { formatHeight, formatWeight, typeTranslations, statTranslations, getTypeBackgroundClass, getTypeTextClass } from "@/lib/pokemon";
+import { formatHeight, formatWeight, typeTranslations, statTranslations, getTypeBackgroundClass, getTypeTextClass, getTypeIcon } from "@/lib/pokemon";
+
+// Helper component to display the type icon
+const TypeIcon = ({ type }: { type: string }) => {
+  const iconName = getTypeIcon(type);
+  
+  // Get the correct icon based on the name
+  switch (iconName) {
+    case "CircleDot": return <CircleDot className="h-5 w-5 mr-2" />;
+    case "Flame": return <Flame className="h-5 w-5 mr-2" />;
+    case "Droplets": return <Droplets className="h-5 w-5 mr-2" />;
+    case "Leaf": return <Leaf className="h-5 w-5 mr-2" />;
+    case "Zap": return <Zap className="h-5 w-5 mr-2" />;
+    case "Snowflake": return <Snowflake className="h-5 w-5 mr-2" />;
+    case "Swords": return <Swords className="h-5 w-5 mr-2" />;
+    case "Skull": return <Skull className="h-5 w-5 mr-2" />;
+    case "Mountain": return <Mountain className="h-5 w-5 mr-2" />;
+    case "Wind": return <Wind className="h-5 w-5 mr-2" />;
+    case "Brain": return <Brain className="h-5 w-5 mr-2" />;
+    case "Bug": return <Bug className="h-5 w-5 mr-2" />;
+    case "Ghost": return <Ghost className="h-5 w-5 mr-2" />;
+    case "Infinity": return <Infinity className="h-5 w-5 mr-2" />;
+    case "Moon": return <Moon className="h-5 w-5 mr-2" />;
+    case "Shield": return <Shield className="h-5 w-5 mr-2" />;
+    case "Sparkles": return <Sparkles className="h-5 w-5 mr-2" />;
+    default: return <Circle className="h-5 w-5 mr-2" />;
+  }
+};
 
 export default function PokemonDetail() {
   const [, params] = useRoute("/pokemon/:id");
@@ -68,8 +99,9 @@ export default function PokemonDetail() {
             {pokemon.types.map((type) => (
               <Badge
                 key={type}
-                className={`${getTypeBackgroundClass(type)} ${getTypeTextClass(type)} text-lg px-4 py-1`}
+                className={`${getTypeBackgroundClass(type)} ${getTypeTextClass(type)} text-lg px-4 py-1 flex items-center`}
               >
+                <TypeIcon type={type} />
                 {typeTranslations[type]}
               </Badge>
             ))}
@@ -92,21 +124,22 @@ export default function PokemonDetail() {
           {pokemon.evolutions && pokemon.evolutions.length > 0 && (
             <div>
               <h2 className="text-2xl font-semibold mb-4">Entwicklungen</h2>
-              <div className="flex gap-4 items-center justify-center">
+              <div className="flex flex-wrap gap-4 items-center justify-center">
                 {pokemon.evolutions.map((evolution, index) => (
-                  <div 
-                    key={evolution.id}
-                    className="text-center cursor-pointer"
-                    onClick={() => setLocation(`/pokemon/${evolution.id}`)}
-                  >
-                    <img
-                      src={evolution.sprite}
-                      alt={evolution.germanName}
-                      className="w-24 h-24"
-                    />
-                    <p className="font-medium">{evolution.germanName}</p>
+                  <div key={evolution.id} className="flex items-center">
+                    <div 
+                      className="text-center cursor-pointer hover:scale-105 transition-transform"
+                      onClick={() => setLocation(`/pokemon/${evolution.id}`)}
+                    >
+                      <img
+                        src={evolution.sprite}
+                        alt={evolution.germanName}
+                        className="w-24 h-24"
+                      />
+                      <p className="font-medium">{evolution.germanName}</p>
+                    </div>
                     {index < pokemon.evolutions.length - 1 && (
-                      <div className="text-2xl text-muted-foreground mx-2">→</div>
+                      <div className="text-2xl text-primary mx-4">→</div>
                     )}
                   </div>
                 ))}

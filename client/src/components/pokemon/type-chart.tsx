@@ -1,10 +1,42 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { typeTranslations, getTypeBackgroundClass, getTypeTextClass } from "@/lib/pokemon";
+import { typeTranslations, getTypeBackgroundClass, getTypeTextClass, getTypeIcon } from "@/lib/pokemon";
+import { 
+  Flame, Droplets, Leaf, Zap, Snowflake, CircleDot, 
+  Swords, Skull, Mountain, Wind, Brain, Bug, Ghost, Infinity, 
+  Moon, Shield, Sparkles, Circle 
+} from "lucide-react";
 
 // Import effectiveness data from battle.ts
 import { typeEffectiveness } from "@/lib/battle";
+
+// Helper component to display the type icon
+const TypeIcon = ({ type }: { type: string }) => {
+  const iconName = getTypeIcon(type);
+  
+  // Get the correct icon based on the name
+  switch (iconName) {
+    case "CircleDot": return <CircleDot className="h-4 w-4 mr-1" />;
+    case "Flame": return <Flame className="h-4 w-4 mr-1" />;
+    case "Droplets": return <Droplets className="h-4 w-4 mr-1" />;
+    case "Leaf": return <Leaf className="h-4 w-4 mr-1" />;
+    case "Zap": return <Zap className="h-4 w-4 mr-1" />;
+    case "Snowflake": return <Snowflake className="h-4 w-4 mr-1" />;
+    case "Swords": return <Swords className="h-4 w-4 mr-1" />;
+    case "Skull": return <Skull className="h-4 w-4 mr-1" />;
+    case "Mountain": return <Mountain className="h-4 w-4 mr-1" />;
+    case "Wind": return <Wind className="h-4 w-4 mr-1" />;
+    case "Brain": return <Brain className="h-4 w-4 mr-1" />;
+    case "Bug": return <Bug className="h-4 w-4 mr-1" />;
+    case "Ghost": return <Ghost className="h-4 w-4 mr-1" />;
+    case "Infinity": return <Infinity className="h-4 w-4 mr-1" />;
+    case "Moon": return <Moon className="h-4 w-4 mr-1" />;
+    case "Shield": return <Shield className="h-4 w-4 mr-1" />;
+    case "Sparkles": return <Sparkles className="h-4 w-4 mr-1" />;
+    default: return <Circle className="h-4 w-4 mr-1" />;
+  }
+};
 
 type TypeEffectiveness = {
   strong: string[];
@@ -52,11 +84,12 @@ export default function TypeChart() {
                 className={`
                   ${getTypeBackgroundClass(type)} 
                   ${getTypeTextClass(type)}
-                  cursor-pointer
+                  cursor-pointer flex items-center
                   ${selectedType === type ? 'ring-2 ring-primary ring-offset-2' : ''}
                 `}
                 onClick={() => setSelectedType(type === selectedType ? null : type)}
               >
+                <TypeIcon type={type} />
                 {typeTranslations[type]}
               </Badge>
             ))}
@@ -76,8 +109,9 @@ export default function TypeChart() {
                   {getTypeEffectiveness(selectedType).strong.map(type => (
                     <Badge
                       key={type}
-                      className={`${getTypeBackgroundClass(type)} ${getTypeTextClass(type)}`}
+                      className={`${getTypeBackgroundClass(type)} ${getTypeTextClass(type)} flex items-center`}
                     >
+                      <TypeIcon type={type} />
                       {typeTranslations[type]}
                     </Badge>
                   ))}
@@ -91,8 +125,9 @@ export default function TypeChart() {
                   {getTypeEffectiveness(selectedType).weak.map(type => (
                     <Badge
                       key={type}
-                      className={`${getTypeBackgroundClass(type)} ${getTypeTextClass(type)}`}
+                      className={`${getTypeBackgroundClass(type)} ${getTypeTextClass(type)} flex items-center`}
                     >
+                      <TypeIcon type={type} />
                       {typeTranslations[type]}
                     </Badge>
                   ))}
@@ -106,8 +141,9 @@ export default function TypeChart() {
                   {getTypeEffectiveness(selectedType).immune.map(type => (
                     <Badge
                       key={type}
-                      className={`${getTypeBackgroundClass(type)} ${getTypeTextClass(type)}`}
+                      className={`${getTypeBackgroundClass(type)} ${getTypeTextClass(type)} flex items-center`}
                     >
+                      <TypeIcon type={type} />
                       {typeTranslations[type]}
                     </Badge>
                   ))}

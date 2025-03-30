@@ -86,3 +86,29 @@ export function getTypeTextClass(type: string): string {
   const darkTypes = ["electric", "ice", "fairy"];
   return darkTypes.includes(type) ? "text-gray-900" : "text-white";
 }
+
+// Icon mapping for Pokémon types
+export function getTypeIcon(type: string): string {
+  const typeIcons: Record<string, string> = {
+    normal: "CircleDot",
+    fire: "Flame",
+    water: "Droplets",
+    electric: "Zap",
+    grass: "Leaf",
+    ice: "Snowflake",
+    fighting: "Swords",
+    poison: "Skull",
+    ground: "Mountain",
+    flying: "Wind",
+    psychic: "Brain",
+    bug: "Bug",
+    rock: "Mountain",
+    ghost: "Ghost",
+    dragon: "Infinity",
+    dark: "Moon",
+    steel: "Shield",
+    fairy: "Sparkles"
+  };
+  
+  return typeIcons[type] || "Circle";
+}
