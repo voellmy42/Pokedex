@@ -138,7 +138,7 @@ export default function PokemonDetail() {
                       />
                       <p className="font-medium">{evolution.germanName}</p>
                     </div>
-                    {index < pokemon.evolutions.length - 1 && (
+                    {index < (pokemon.evolutions?.length || 0) - 1 && (
                       <div className="text-2xl text-primary mx-4">→</div>
                     )}
                   </div>
@@ -171,6 +171,35 @@ export default function PokemonDetail() {
                 </div>
               ))}
             </div>
+          </div>
+          
+          <div className="flex justify-center mt-6">
+            <Button 
+              onClick={() => {
+                // Store the selected pokemon in localStorage
+                const battlePokemon = JSON.parse(localStorage.getItem('battlePokemon') || '[null, null]');
+                
+                // Check if this pokemon is already in the battle selection
+                if (!battlePokemon.some((p: any) => p?.id === pokemon.id)) {
+                  // Find the first empty slot (null) or use the 0 index if all slots are filled
+                  const index = battlePokemon.findIndex((p: any) => p === null);
+                  if (index !== -1) {
+                    battlePokemon[index] = pokemon;
+                  } else {
+                    battlePokemon[0] = pokemon;
+                  }
+                  
+                  localStorage.setItem('battlePokemon', JSON.stringify(battlePokemon));
+                }
+                
+                // Navigate back to home
+                setLocation('/');
+              }}
+              className="bg-primary hover:bg-primary/90 text-white"
+            >
+              <Swords className="w-4 h-4 mr-2" />
+              Für Kampf auswählen
+            </Button>
           </div>
         </CardContent>
       </Card>

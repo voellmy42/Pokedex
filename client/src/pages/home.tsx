@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import PokemonGrid from "@/components/pokemon/pokemon-grid";
 import SearchBar from "@/components/pokemon/search-bar";
@@ -9,15 +9,64 @@ import { type Pokemon } from "@shared/schema";
 
 export default function Home() {
   const [page, setPage] = useState(1);
+  const [allPokemon, setAllPokemon] = useState<Pokemon[]>([]);
   const [search, setSearch] = useState("");
   const [selectedPokemon, setSelectedPokemon] = useState<(Pokemon | null)[]>([null, null]);
+  const [hasMore, setHasMore] = useState(true);
+  const observer = useRef<IntersectionObserver | null>(null);
+  const loadingRef = useRef<HTMLDivElement>(null);
 
-  const { data: pokemon, isLoading } = useQuery({
+  // Get Pokemon data for the current page
+  const { data: pokemonPage, isLoading } = useQuery({
     queryKey: ["/api/pokemon", page, search],
     queryFn: () =>
       fetch(`/api/pokemon?page=${page}&query=${search}`).then((res) => res.json()),
   });
 
+  // Load selected battle Pokemon from localStorage on initial render
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('battlePokemon');
+      if (stored) {
+        setSelectedPokemon(JSON.parse(stored));
+      }
+    } catch (error) {
+      console.error("Error loading battle Pokemon from localStorage:", error);
+    }
+  }, []);
+
+  // Update the Pokemon list when new data is loaded
+  useEffect(() => {
+    if (pokemonPage) {
+      if (page === 1) {
+        // Reset the list if it's the first page (e.g., after a search)
+        setAllPokemon(pokemonPage);
+      } else {
+        // Append the new Pokemon to the existing list for infinite scrolling
+        setAllPokemon(prev => [...prev, ...pokemonPage]);
+      }
+
+      // Check if there are more Pokemon to load
+      setHasMore(pokemonPage.length > 0);
+    }
+  }, [pokemonPage, page]);
+
+  // Intersection Observer for infinite scrolling
+  const lastPokemonElementRef = useCallback((node: HTMLDivElement) => {
+    if (isLoading) return;
+    
+    if (observer.current) observer.current.disconnect();
+    
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage(prevPage => prevPage + 1);
+      }
+    });
+    
+    if (node) observer.current.observe(node);
+  }, [isLoading, hasMore]);
+
+  // Handle Pokemon selection for battle
   const handlePokemonSelect = (pokemon: Pokemon) => {
     setSelectedPokemon(current => {
       if (current.some(p => p?.id === pokemon.id)) {
@@ -26,21 +75,34 @@ export default function Home() {
 
       const index = current.findIndex(p => p === null);
       if (index === -1) {
-        return current;
+        // All slots filled, replace the first one
+        const newSelected = [...current];
+        newSelected[0] = pokemon;
+        localStorage.setItem('battlePokemon', JSON.stringify(newSelected));
+        return newSelected;
       }
 
       const newSelected = [...current];
       newSelected[index] = pokemon;
+      localStorage.setItem('battlePokemon', JSON.stringify(newSelected));
       return newSelected;
     });
   };
 
-  const handlePokemonDeselect = (index: number) => {
+  // Handle Pokemon selection in the battle selector component
+  const handlePokemonSelectInBattle = (index: number, pokemon: Pokemon | null) => {
     setSelectedPokemon(current => {
       const newSelected = [...current];
-      newSelected[index] = null;
+      newSelected[index] = pokemon;
+      localStorage.setItem('battlePokemon', JSON.stringify(newSelected));
       return newSelected;
     });
+  };
+
+  // Reset search to reload all Pokemon
+  const resetSearch = () => {
+    setSearch("");
+    setPage(1);
   };
 
   return (
@@ -72,7 +134,10 @@ export default function Home() {
               </div>
 
               <div className="bg-gray-100 rounded-xl p-3 sm:p-4 mb-4 sticky top-0 z-10">
-                <SearchBar onSearch={setSearch} />
+                <SearchBar onSearch={text => {
+                  setSearch(text);
+                  setPage(1); // Reset to first page when searching
+                }} />
               </div>
 
               <div className="space-y-4">
@@ -80,16 +145,19 @@ export default function Home() {
 
                 <BattleSelector
                   selectedPokemon={selectedPokemon}
-                  onSelectPokemon={handlePokemonSelect}
+                  onSelectPokemon={handlePokemonSelectInBattle}
                 />
 
                 <PokemonGrid
-                  pokemon={pokemon || []}
-                  isLoading={isLoading}
+                  pokemon={allPokemon || []}
+                  isLoading={isLoading && page === 1}
                   currentPage={page}
                   onPageChange={setPage}
-                  onSelect={handlePokemonSelect}
-                  selectedPokemon={selectedPokemon}
+                  onPokemonSelect={handlePokemonSelect}
+                  selectedPokemonIds={selectedPokemon.map(p => p?.id)}
+                  lastPokemonRef={lastPokemonElementRef}
+                  hasMore={hasMore}
+                  isLoadingMore={isLoading && page > 1}
                 />
               </div>
             </div>

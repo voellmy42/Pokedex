@@ -1,8 +1,7 @@
 import { type Pokemon } from "@shared/schema";
 import PokemonCard from "./pokemon-card";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 interface PokemonGridProps {
   pokemon: Pokemon[];
@@ -11,6 +10,9 @@ interface PokemonGridProps {
   onPageChange: (page: number) => void;
   onPokemonSelect?: (pokemon: Pokemon) => void;
   selectedPokemonIds?: (number | undefined)[];
+  lastPokemonRef?: (node: HTMLDivElement) => void;
+  hasMore?: boolean;
+  isLoadingMore?: boolean;
 }
 
 export default function PokemonGrid({ 
@@ -19,7 +21,10 @@ export default function PokemonGrid({
   currentPage,
   onPageChange,
   onPokemonSelect,
-  selectedPokemonIds = []
+  selectedPokemonIds = [],
+  lastPokemonRef,
+  hasMore = false,
+  isLoadingMore = false
 }: PokemonGridProps) {
   if (isLoading) {
     return (
@@ -36,36 +41,46 @@ export default function PokemonGrid({
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
-        {pokemon.map((p) => (
-          <PokemonCard 
-            key={p.id} 
-            pokemon={p}
-            onSelect={onPokemonSelect}
-            isSelected={selectedPokemonIds.includes(p.id)}
-          />
-        ))}
+        {pokemon.map((p, index) => {
+          // Add a ref to the last item for infinite scrolling
+          if (pokemon.length === index + 1 && lastPokemonRef) {
+            return (
+              <div 
+                key={p.id} 
+                ref={lastPokemonRef}
+              >
+                <PokemonCard 
+                  pokemon={p}
+                  onSelect={onPokemonSelect}
+                  isSelected={selectedPokemonIds.includes(p.id)}
+                />
+              </div>
+            );
+          } else {
+            return (
+              <PokemonCard 
+                key={p.id} 
+                pokemon={p}
+                onSelect={onPokemonSelect}
+                isSelected={selectedPokemonIds.includes(p.id)}
+              />
+            );
+          }
+        })}
       </div>
 
-      <div className="flex justify-center gap-4">
-        <Button
-          variant="outline"
-          onClick={() => onPageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-          className="border-2 hover:bg-gray-100"
-        >
-          <ChevronLeft className="h-4 w-4 mr-1" />
-          Vorherige
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => onPageChange(currentPage + 1)}
-          disabled={pokemon.length < 20}
-          className="border-2 hover:bg-gray-100"
-        >
-          Nächste
-          <ChevronRight className="h-4 w-4 ml-1" />
-        </Button>
-      </div>
+      {isLoadingMore && (
+        <div className="flex justify-center items-center py-6">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <span className="ml-2 text-lg">Lade weitere Pokémon...</span>
+        </div>
+      )}
+
+      {!hasMore && pokemon.length > 0 && (
+        <div className="text-center text-gray-500 py-6">
+          Keine weiteren Pokémon verfügbar
+        </div>
+      )}
     </div>
   );
 }
