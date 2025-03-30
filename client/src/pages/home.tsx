@@ -20,12 +20,10 @@ export default function Home() {
 
   const handlePokemonSelect = (pokemon: Pokemon) => {
     setSelectedPokemon(current => {
-      // If this Pokemon is already selected, return current state
       if (current.some(p => p?.id === pokemon.id)) {
         return current;
       }
 
-      // Find first empty slot
       const index = current.findIndex(p => p === null);
       if (index === -1) {
         return current;
@@ -37,10 +35,10 @@ export default function Home() {
     });
   };
 
-  const handlePokemonDeselect = (index: number, pokemon: Pokemon | null) => {
+  const handlePokemonDeselect = (index: number) => {
     setSelectedPokemon(current => {
       const newSelected = [...current];
-      newSelected[index] = pokemon;
+      newSelected[index] = null;
       return newSelected;
     });
   };
@@ -86,13 +84,14 @@ export default function Home() {
                 />
 
                 <PokemonGrid
-                pokemon={pokemon || []}
-                isLoading={isLoading}
-                currentPage={page}
-                onPageChange={setPage}
-                onPokemonSelect={handlePokemonSelect}
-                selectedPokemonIds={selectedPokemon.map(p => p?.id)}
-              />
+                  pokemon={pokemon || []}
+                  isLoading={isLoading}
+                  currentPage={page}
+                  onPageChange={setPage}
+                  onSelect={handlePokemonSelect}
+                  selectedPokemon={selectedPokemon}
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
