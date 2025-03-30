@@ -16,8 +16,19 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
   const [open, setOpen] = useState(false);
 
   const { data: pokemon } = useQuery({
-    queryKey: ["/api/pokemon", 1, ""],
-    queryFn: () => fetch(`/api/pokemon?page=1`).then((res) => res.json()),
+    queryKey: ["allPokemon"],
+    queryFn: async () => {
+      let allPokemon = [];
+      let page = 1;
+      while (true) {
+        const response = await fetch(`/api/pokemon?page=${page}`);
+        const data = await response.json();
+        if (data.length === 0) break;
+        allPokemon = [...allPokemon, ...data];
+        page++;
+      }
+      return allPokemon;
+    },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
